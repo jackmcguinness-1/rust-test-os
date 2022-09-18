@@ -1,10 +1,19 @@
 #![no_std]
 #![no_main]
 
-use core::panic::PanicInfo;
+mod vga_buffer;
+use vga_buffer::{
+    Writer,
+    ColourCode,
+    Colour,
+    Buffer
+};
+
+use core::{panic::PanicInfo, fmt::Write};
 
 #[panic_handler]
-fn panic (_info: &PanicInfo) -> ! {
+fn panic (info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
 
@@ -14,16 +23,11 @@ static HELLO: &[u8] = b"Hello World";
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
 
-    let vga_buffer = 0xb8000 as *mut u8;
+    println!("First line");
+    println!("Second line");
+    println!("Hello world from new println macro!!");
 
-    for (i, &byte) in HELLO.iter().enumerate(){
-        unsafe{
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = 0xf;
-        }
-    }
+    panic!("we can now do panic messages, pretty nice!");
 
     loop {}
 }
-
-
